@@ -14,5 +14,8 @@ namespace dungeon {
 		static const char* name;
 	public: 
 		Movement getMovementInput();
+		bool     getPauseInput();
+
+		bool isDown(char pKey);
 	};
 }
