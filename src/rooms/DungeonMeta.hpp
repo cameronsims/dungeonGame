@@ -1,5 +1,15 @@
 #pragma once
 
+#define DUNGEON_CLEAR '.'
+#define DUNGEON_WALL '#'
+#define DUNGEON_DOOR_HORIZONTAL '-'
+#define DUNGEON_DOOR_VERTICAL '|'
+
+#define DUNGEON_ROOM_MAX_HEIGHT 6
+#define DUNGEON_ROOM_MIN_HEIGHT 5
+#define DUNGEON_ROOM_MAX_LENGTH 6
+#define DUNGEON_ROOM_MIN_LENGTH 5
+
 namespace dungeon {
 	const enum consoleColours {
 		COLOUR_BLACK = 0, COLOUR_BLUE, COLOUR_GREEN, 
@@ -9,9 +19,17 @@ namespace dungeon {
 		COLOUR_LIGHTRED, COLOUR_LIGHTMEGENTA, COLOUR_YELLOW, COLOUR_WHITE
 	};
 
+	const enum dungeonType {
+		DUNGEON_NORMAL = 0,
+		DUNGEON_BEGIN,
+		DUNGEON_END,
+		DUNGEON_EMPTY,
+		DUNGEON_SPECIAL
+	};
+
 	constexpr size_t dungeonAmounts = 5;
 	const enum dungeonColour {
-		DUNGEON_DEFAULT,
+		DUNGEON_DEFAULT = 0,
 		DUNGEON_COLD,
 		DUNGEON_HOT,
 		DUNGEON_NATURAL,

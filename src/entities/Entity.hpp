@@ -55,14 +55,10 @@ namespace dungeon {
 
 		bool atPos(unsigned int pX, unsigned int pY) const;
 
-		void update(dungeon::Room* rooms, size_t roomSize, ENTITIES& entities);
+		virtual void update(dungeon::Room* rooms, size_t roomSize, ENTITIES& entities);
 
-		Entity() {
-			this->createEntity('!', 0, 0, 0, ENTITY_STILL);
-		}
-		Entity(char pIcon, unsigned int pX, unsigned int pY, unsigned int pRoom, EntityBehaviour pBehave) {
-			this->createEntity(pIcon, pX, pY, pRoom, pBehave);
-		}
+		Entity();
+		Entity(char pIcon, unsigned int pX, unsigned int pY, unsigned int pRoom, EntityBehaviour pBehave);
 
 		static int entityAtPosition(ENTITIES& entities, unsigned int x, unsigned int y);
 

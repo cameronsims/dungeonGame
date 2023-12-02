@@ -16,7 +16,6 @@ void dungeon::Entity::createEntity(char pIcon, unsigned int xPos, unsigned yPos,
 	this->behaviour = pBehave;
 }
 
-
 void dungeon::Entity::createEntity(Entity& const ent) {
 	this->icon = ent.getIcon();
 	this->x = ent.getX();
@@ -73,7 +72,6 @@ char dungeon::Entity::setIcon(char pIcon) {
 	return this->icon;
 }
 
-
 dungeon::EntityBehaviour dungeon::Entity::setBehaviour(dungeon::EntityBehaviour pBehave) {
 	this->behaviour = pBehave;
 	return this->behaviour;
@@ -85,7 +83,7 @@ bool dungeon::Entity::atPos(unsigned int pX, unsigned int pY) const {
 }
 
 void dungeon::Entity::update(dungeon::Room* rooms, size_t roomSize, ENTITIES& entities) {
-
+	// There is no behaviour for an undefined entity
 }
 
 int dungeon::Entity::entityAtPosition(ENTITIES& entities, unsigned int x, unsigned int y) {
@@ -165,4 +163,11 @@ void dungeon::Entity::moveDown(dungeon::Room* rooms, size_t roomSize, ENTITIES& 
 	if (this->canMoveDown(rooms[this->getRoom()], entities)) {
 		this->setY(this->getY() + this->getVelocity());
 	}
+}
+
+dungeon::Entity::Entity() {
+	this->createEntity('!', 0, 0, 0, ENTITY_STILL);
+}
+dungeon::Entity::Entity(char pIcon, unsigned int pX, unsigned int pY, unsigned int pRoom, EntityBehaviour pBehave) {
+	this->createEntity(pIcon, pX, pY, pRoom, pBehave);
 }

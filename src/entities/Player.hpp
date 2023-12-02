@@ -4,6 +4,10 @@
 
 namespace dungeon {
 	class Player : public Entity {
+	private:
+		void enterNewRoom(Room& room, ENTITIES& entities, size_t roomSize, size_t newRoom);
+		void setMiddleVertical(Room& room);
+		void setMiddleHorizontal(Room& room);
 	public:
 		Player(unsigned int pX, unsigned int pY, unsigned int pRoom) {
 			this->createEntity('P', pX, pY, pRoom, ENTITY_PLAYER);
