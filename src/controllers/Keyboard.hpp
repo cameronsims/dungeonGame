@@ -1,7 +1,5 @@
 #pragma once
 
-#include <windows.h>
-
 #include "Controller.hpp"
 
 namespace dungeon {

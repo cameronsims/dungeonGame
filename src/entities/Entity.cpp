@@ -62,6 +62,7 @@ int dungeon::Entity::setVelocity(int pSpeed) {
 	this->speed = pSpeed;
 	return this->speed;
 }
+
 unsigned int dungeon::Entity::setRoom(unsigned int pRoom) {
 	this->currentRoom = pRoom;
 	return this->currentRoom;

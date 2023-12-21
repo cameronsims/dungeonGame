@@ -1,14 +1,12 @@
 ﻿#pragma once
 
-#include <string>
-
 #include "DungeonMeta.hpp"
+
+#include <string>
 
 namespace dungeon {
 
 	class Room {
-		friend void generateRooms(dungeon::Room* rooms, unsigned int width, unsigned int height, size_t roomSize);
-		friend void generateRooms(dungeon::Room* rooms, unsigned int width, unsigned int height, size_t roomSize, dungeonColour clr);
 	private:
 		std::string* roomData;
 
@@ -18,37 +16,36 @@ namespace dungeon {
 
 		unsigned int length = 0;
 		unsigned int height = 0;
-
-		void fillHorizontalWall(unsigned int pWidth, unsigned int pHeight, size_t currentRoom, size_t roomSize);
-		void fillVerticalWall(unsigned int pWidth, unsigned int pHeight, size_t currentRoom, size_t roomSize);
 	public:
 		static bool onEdge(size_t currentRoom, size_t roomSize);
 
 		static unsigned int roomAbove(size_t currentRoom, size_t roomSize);
 		static unsigned int roomBelow(size_t currentRoom, size_t roomSize);
 
-		bool exists();
+		bool exists() const;
 
-		std::string* getRoom();
-		dungeonColour getMode();
-		char getTile(size_t xPos, size_t yPos);
+		std::string* getRoom() const;
+		std::string* setRoom(size_t pHeight, size_t pLength);
 
-		unsigned int getLength();
-		unsigned int getHeight();
+		dungeonColour getMode() const;
+		dungeonColour setMode(dungeonColour pColour);
 
-		dungeonType getType();
+		char getTile(size_t xPos, size_t yPos) const;
+		char setTile(size_t xPos, size_t yPos, char c);
+
+		unsigned int getLength() const;
+		unsigned int setLength(unsigned int pLength);
+		unsigned int getHeight() const;
+		unsigned int setHeight(unsigned int pHeight);
+
+		dungeonType getType() const;
 		dungeonType setType(dungeon::dungeonType pType);
 
 		unsigned int getRoomHex();
 
-		void createWalls(unsigned int pLength, unsigned int pHeight, size_t currentRoom, size_t roomSize);
-		void createDoors(unsigned int pLength, unsigned int pHeight, size_t currentRoom, unsigned int roomSize);
-
-		void createRoom(unsigned int pLength, unsigned int pHeight, size_t currentRoom, size_t roomSize, dungeonType pType, dungeonColour pMode);
-
 		// Create room
 		Room();
-		Room(unsigned int pLength, unsigned int pHeight, size_t currentRoom, size_t roomSize, dungeonType pType, dungeonColour pMode);
+		//Room(unsigned int pLength, unsigned int pHeight, size_t currentRoom, size_t roomSize, dungeonType pType, dungeonColour pMode);
 		~Room();
 	};
 }

@@ -1,7 +1,9 @@
 // Rooms
+#include "rooms/Dungeon.hpp"
 #include "rooms/Room.hpp"
 #include "rooms/DungeonMeta.hpp"
 #include "rooms/RoomGenerator.hpp"
+#include "rooms/EntityGenerator.hpp"
 #include "rooms/RoomWorm.hpp"
 // Entities
 #include "entities/Entity.hpp"
@@ -10,42 +12,35 @@
 // In / Out
 #include "io/Display.hpp"
 #include "io/Movement.hpp"
-
-#include <conio.h>
-#include <windows.h>
+#include "io/UserInterface.hpp"
 
 int main() {
-	// Make an input
-	dungeon::Keyboard input;
-	// Console Handler
-	HANDLE consoleColour = GetStdHandle(STD_OUTPUT_HANDLE);				// Get Ability to change Windows console colour
-	// Generate map
-	constexpr size_t roomSize = 8*8;
-	// The vector of the dungeon
-	dungeon::dungeonColour clr = dungeon::DUNGEON_DEFAULT;
-	// Create room array
-	dungeon::Room rooms[roomSize];
+	// The amount of rooms Horizontally / Vertically
+	constexpr unsigned int dungeonWidth = 8, dungeonHeight = 8;
+
+	dungeon::Keyboard input;													// Input from the user
+	HANDLE consoleColour = GetStdHandle(STD_OUTPUT_HANDLE);						// Get Ability to change Windows console colour
+
+	dungeon::Room* rooms = new dungeon::Room[dungeonWidth * dungeonHeight];		// The rooms of the dungeon
+	dungeon::Dungeon chamber(rooms, dungeonWidth, dungeonHeight);				// The Dungeon and the meta
+
 	// All entities
-	std::vector<dungeon::Entity> entities;
-	entities.push_back( dungeon::Player(5, 5, 4) );
-	entities.push_back( dungeon::Enemy('E', 2, 2, 4, dungeon::ENEMY_VERTICAL) );
-	entities.push_back( dungeon::Enemy('E', 5, 3, 4, dungeon::ENEMY_HORIZONTAL) );
-	// Entity that is the player
+	std::vector<dungeon::Entity> entities;	// Entities 
+	ENTITIES loadedEntities;				// Loaded Entities
+	std::vector<dungeon::Enemy*> enemies;	// Enemies (NOT PLAYER!!)
+
+	// Reserve spot for player
+	entities.push_back(dungeon::Player(3, 3, chamber.getHeight() * 4 + chamber.getWidth() / 2));
+
+	// CONTENTS CHANGE THE VECTOR KEEP THIS BELOW!!!
 	dungeon::Player& const player = (dungeon::Player&)entities[0];
-	std::vector<dungeon::Enemy*> enemies;
-	// If they are an enemy, then make sure they are in the reference vector
-	for (int i = 0; i < entities.size(); i++) {
-		if (entities[i].getBehaviour() != dungeon::ENTITY_PLAYER) {
-			enemies.push_back((dungeon::Enemy*)&entities[i]);
-		}
-	}
-	// Loaded Enemies
-	ENTITIES loadedEntities;
-	std::vector<dungeon::Enemy*> loadedEnemies;
-	// Prepare to load the room
-	dungeon::Worm worm(player.getRoom(), sqrt(roomSize), sqrt(roomSize));
-	worm.start();
-	dungeon::generateRooms(rooms, roomSize, worm.getPath());
+
+	dungeon::Worm worm(player.getRoom(), &chamber);			// Generate path for the rooms
+	worm.start();											// Generate a path, stored in the worm
+	dungeon::generateRooms(rooms, chamber, worm.getPath());	// Generate the Rooms
+	dungeon::generateEnemies(&chamber, entities, player);	// Generate the Enemies
+	dungeon::setEnemies(enemies, entities);					// Put the enemies in the entity list into the enemy vector
+
 	// If this is false, then it will end the program
 	bool playing = true;
 	// Game Counter
@@ -53,60 +48,71 @@ int main() {
 	// Game loop
 	while (playing) {
 		// Current room that the player is in
-		dungeon::Room& currentRm = rooms[player.getRoom()];
-		
-		printf("Room %d: (%dx%d)\n", player.getRoom(), currentRm.getLength(), currentRm.getHeight());
+		dungeon::Room* currentRm = &rooms[player.getRoom()];
+
+		// Show the room with the dimensions
+		printf("Room %d: (%dx%d)\n", player.getRoom(), currentRm->getLength(), currentRm->getHeight());
 
 		// Set the console to the colour of the room
-		SetConsoleTextAttribute(consoleColour, currentRm.getRoomHex());			// Colour code of console
+		dungeon::Console::setColour(currentRm->getRoomHex());			// Colour code of console=
+
 		// Print the room
-		dungeon::printRoom(rooms, roomSize, player, loadedEntities);
+		dungeon::printRoom(rooms, chamber.size(), player, loadedEntities);
+
 		// Set back to the default console colour
-		SetConsoleTextAttribute(consoleColour, dungeon::COLOUR_WHITE + (dungeon::COLOUR_BLACK));		// Colour code of console
+		dungeon::Console::setColour(dungeon::COLOUR_WHITE + (dungeon::COLOUR_BLACK));		// Colour code of console
+
 		// Print the map 
-		dungeon::printMap(rooms, player.getRoom(), roomSize);
-		// Reset Counter
-		int i = 0;
-		// Reset loaded entities if we are in a different room
-		if (loadedEnemies.size() > 0) {
-			if (player.getRoom() != loadedEnemies[0]->getRoom()) {
-				loadedEnemies.clear();
-			}
-		}
+		dungeon::printMap(rooms, player.getRoom(), chamber.size());
+
 		// Get input from user
 		dungeon::Movement move = dungeon::Movement::MOVE_STILL; 
+
 		// While we are not moving, wait for a keyboard input 
 		while (move == dungeon::Movement::MOVE_STILL || counter == 20) {
 			// Increase counter to refresh
 			counter++;
+
 			// Get an input from thr user
 			move = input.getMovementInput();
-			player.update(rooms, roomSize, loadedEntities);
-			// Depending on input, execute one of the following
-			switch (move) {
-				case dungeon::Movement::MOVE_UP:    { player.moveUp   (rooms, roomSize, loadedEntities); break; }
-				case dungeon::Movement::MOVE_LEFT:  { player.moveLeft (rooms, roomSize, loadedEntities); break; }
-				case dungeon::Movement::MOVE_DOWN:  { player.moveDown (rooms, roomSize, loadedEntities); break; }
-				case dungeon::Movement::MOVE_RIGHT: { player.moveRight(rooms, roomSize, loadedEntities); break; }
+			player.update(rooms, chamber.size(), loadedEntities);
+
+			// Depending on input, move the player
+			player.move(rooms, chamber.size(), loadedEntities, move);
+
+			// Check if we've moved rooms
+			if (currentRm != &rooms[player.getRoom()]) {
+				loadedEntities.clear();
+				// For all enemies
+				for (dungeon::Enemy* e : enemies) {
+					// If they are in the same room
+					if (e->getRoom() == player.getRoom()) {
+						// Add them to the vector
+						loadedEntities.push_back(e);
+					}
+				}
 			}
+
 			// Update all entities every 10 ticks
-			if (counter % 20 == 0) {
+			if (counter == 20) {
 				// Reset the counter
 				counter = 0;
-				// For all entities
-				for (unsigned int i = 0; i < loadedEnemies.size(); i++) {
-					// If the entity is not a player or still
-					if (loadedEnemies[i]->getBehaviour() != dungeon::ENTITY_PLAYER && loadedEnemies[i]->getBehaviour() != dungeon::ENTITY_STILL) {
-						// Then update it
-						loadedEnemies[i]->update(rooms, roomSize, loadedEntities);
-					}
+
+				// Get updates for all loaded entities
+				for (dungeon::Entity* ent : loadedEntities) {
+					dungeon::Enemy* enemy = (dungeon::Enemy*)ent;
+					enemy->update(rooms, chamber.size(), &player, loadedEntities);
 				}
 				break;
 			}
 			// Wait for 30 ms
-			Sleep(30);
+			dungeon::Console::sleep(30);
 		}
 		// Clear the entire console
 		dungeon::clearConsole();
 	}
+
+	delete[] rooms;
+
+	return 0;
 }

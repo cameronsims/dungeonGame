@@ -55,7 +55,9 @@ namespace dungeon {
 
 		bool atPos(unsigned int pX, unsigned int pY) const;
 
-		virtual void update(dungeon::Room* rooms, size_t roomSize, ENTITIES& entities);
+		// POLYMORPHIC
+
+		void update(dungeon::Room* rooms, size_t roomSize, ENTITIES& entities);
 
 		Entity();
 		Entity(char pIcon, unsigned int pX, unsigned int pY, unsigned int pRoom, EntityBehaviour pBehave);

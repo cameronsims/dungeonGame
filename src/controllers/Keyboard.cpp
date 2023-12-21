@@ -1,5 +1,7 @@
 #include "Keyboard.hpp"
 
+#include <windows.h>
+
 dungeon::Movement dungeon::Keyboard::getMovementInput() {
 	// If W is pressed
 	if (this->isDown('W')) {

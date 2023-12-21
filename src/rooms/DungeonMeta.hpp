@@ -10,7 +10,24 @@
 #define DUNGEON_ROOM_MAX_LENGTH 6
 #define DUNGEON_ROOM_MIN_LENGTH 5
 
+#define DUNGEON_ROOM_EMPTY_CHANCE 40
+
+#define DUNGEON_ENEMY_MAX 32
+#define DUNGEON_ROOM_ENEMY_MAX_BASE 2
+
 namespace dungeon {
+	// Types of rooms
+	constexpr char roomTypes[6] = {
+		// USER NOT IN
+		'O',	// NORMAL ROOM
+		'^',	// Begin
+		'v',	// End
+		' ',	// Empty Room
+		'!',	// Special Room
+		// User in
+		'X'		// Room the user is currently in 
+	};
+
 	const enum consoleColours {
 		COLOUR_BLACK = 0, COLOUR_BLUE, COLOUR_GREEN, 
 		COLOUR_CYAN, COLOUR_RED, COLOUR_MAGENTA, 
@@ -43,5 +60,13 @@ namespace dungeon {
 		{ COLOUR_YELLOW, COLOUR_RED},			// Hot Mode
 		{ COLOUR_BROWN, COLOUR_GREEN },			// Natural
 		{ COLOUR_LIGHTGRAY, COLOUR_DARKGRAY }	// Cave
+	};
+
+	enum class Movement {
+		MOVE_STILL = 0,
+		MOVE_UP,
+		MOVE_DOWN,
+		MOVE_LEFT,
+		MOVE_RIGHT
 	};
 }

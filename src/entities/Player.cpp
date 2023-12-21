@@ -63,3 +63,25 @@ void dungeon::Player::moveDown(dungeon::Room* rooms, size_t roomSize, ENTITIES& 
 		this->setY(this->getY() + this->getVelocity());
 	}
 }
+
+void dungeon::Player::move(dungeon::Room* rooms, size_t roomSize, ENTITIES& entities, Movement movement) {
+	switch (movement) {
+		case dungeon::Movement::MOVE_UP: {
+			this->moveUp(rooms, roomSize, entities);
+			break;
+		}
+		case dungeon::Movement::MOVE_LEFT:{
+			this->moveLeft(rooms, roomSize, entities);
+			break;
+		}
+		case dungeon::Movement::MOVE_DOWN:
+		{
+			this->moveDown(rooms, roomSize, entities);
+			break; 
+		}
+		case dungeon::Movement::MOVE_RIGHT: {
+			this->moveRight(rooms, roomSize, entities);
+			break;
+		}
+	}
+}

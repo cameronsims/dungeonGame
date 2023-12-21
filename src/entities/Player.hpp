@@ -8,6 +8,11 @@ namespace dungeon {
 		void enterNewRoom(Room& room, ENTITIES& entities, size_t roomSize, size_t newRoom);
 		void setMiddleVertical(Room& room);
 		void setMiddleHorizontal(Room& room);
+
+		void moveRight(dungeon::Room* rooms, size_t roomSize, ENTITIES& entities);
+		void moveLeft(dungeon::Room* rooms, size_t roomSize, ENTITIES& entities);
+		void moveUp(dungeon::Room* rooms, size_t roomSize, ENTITIES& entities);
+		void moveDown(dungeon::Room* rooms, size_t roomSize, ENTITIES& entities);
 	public:
 		Player(unsigned int pX, unsigned int pY, unsigned int pRoom) {
 			this->createEntity('P', pX, pY, pRoom, ENTITY_PLAYER);
@@ -16,9 +21,6 @@ namespace dungeon {
 			this->createEntity(ent);
 		}
 
-		void moveRight(dungeon::Room* rooms, size_t roomSize, ENTITIES& entities);
-		void moveLeft(dungeon::Room* rooms, size_t roomSize, ENTITIES& entities);
-		void moveUp(dungeon::Room* rooms, size_t roomSize, ENTITIES& entities);
-		void moveDown(dungeon::Room* rooms, size_t roomSize, ENTITIES& entities);
+		void move(dungeon::Room* rooms, size_t roomSize, ENTITIES& entities, Movement move);
 	};
 }

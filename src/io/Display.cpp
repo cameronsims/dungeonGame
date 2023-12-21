@@ -10,24 +10,25 @@
 
 #include <stdio.h>
 
-void dungeon::printRoom(dungeon::Room* rooms, size_t roomSize, dungeon::Entity& player, ENTITIES& entities) {
-	//for (int i = 0; i < roomSize; i++) {									// For every single room
-	unsigned int i = player.getRoom();										// Get room of player
-	dungeon::Room& room = rooms[i];											// Get current room
-	for (int y = 0; y < room.getHeight(); y++) {							// Get every single vertical line
-		const char* roomData = (char*)rooms[i].getRoom()[y].c_str();		// Get current row
-		for (int x = 0; x < room.getLength(); x++) {						// For every single horizontal strip
-			char icon = roomData[x];										// Current character
-			int index = dungeon::Entity::entityAtPosition(entities, x, y);	// Index of entity at pos (negatite if none)
-			if (index >= 0 && i == entities[index]->getRoom()) {			// If there is an entity who exists at (i, y) && the entity is in the room
-				icon = entities[index]->getIcon();							// Then print the entity reponsible
+// ASSUME ENTITIES ARE LOADED!!!
+void dungeon::printRoom(dungeon::Room* rooms, size_t roomSize, dungeon::Entity& player, ENTITIES& const entities) {
+	//for (int i = 0; i < roomSize; i++) {											// For every single room
+	const unsigned int currentRoom = player.getRoom();								// Get room of player
+	dungeon::Room& room = rooms[currentRoom];										// Get current room
+	for (int y = 0; y < room.getHeight(); y++) {									// Get every single vertical line
+		const char* roomData = (char*)room.getRoom()[y].c_str();					// Get current row
+		for (unsigned int x = 0; x < room.getLength(); x++) {						// For every single horizontal strip
+			char icon = roomData[x];												// Current character
+			int index = dungeon::Entity::entityAtPosition(entities, x, y);			// Index of entity at pos (negatite if none)
+			if (index >= 0) {														// If there is an entity who exists at (i, y)
+				icon = entities[index]->getIcon();									// Then print the entity reponsible
 			}
-			if (player.atPos(x, y)) {										// If player is here
-				icon = player.getIcon();									// Get icon of player
+			if (player.atPos(x, y)) {												// If player is here
+				icon = player.getIcon();											// Get icon of player
 			}
-			printf("%c ", icon);											// Print character
+			printf("%c ", icon);													// Print character
 		}
-		printf("\n");														// Print new line
+		printf("\n");																// Print new line
 	}
 }
 
@@ -35,7 +36,7 @@ void dungeon::printMap(Room* rooms, unsigned int currentRoom, size_t roomSize) {
 	// For every single room
 	for (unsigned int i = 0; i < roomSize; i++) {
 		char inRoom = ' ';
-		inRoom = (i == currentRoom) ? 'X' : (!rooms[i].exists() ? 'O' : ' ');
+		inRoom = (i == currentRoom) ? roomTypes[5] : roomTypes[rooms[i].getType()];
 		printf(" %c%c", inRoom, (dungeon::Room::onEdge(i, roomSize)) ? '\n' : ' ');
 	}
 }

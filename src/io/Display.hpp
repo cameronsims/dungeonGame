@@ -6,7 +6,7 @@
 #include <vector>
 
 namespace dungeon {
-	void printRoom(dungeon::Room* rooms, size_t roomSize, dungeon::Entity& player, ENTITIES& entities);
+	void printRoom(dungeon::Room* rooms, size_t roomSize, dungeon::Entity& player, ENTITIES& const entities);
 	void printMap(Room* rooms, unsigned int currentRoom, size_t roomSize);
 	void clearConsole();
 }

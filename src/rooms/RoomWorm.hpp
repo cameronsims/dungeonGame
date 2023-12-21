@@ -1,36 +1,38 @@
 #pragma once
 
+#include "Dungeon.hpp"
+
 #include <vector>
-#include "../random/Random.hpp"
 
 namespace dungeon {
 	class Worm {
+	  protected:
+		const static enum Slither {
+			SLITHER_NONE = -1,
+			SLITHER_UP = 0,
+			SLITHER_LEFT,
+			SLITHER_RIGHT,
+			SLITHER_DOWN,
+		};
 	  private:
-		  const static enum Slither {
-			  SLITHER_UP = 0,
-			  SLITHER_LEFT,
-			  SLITHER_RIGHT,
-			  SLITHER_DOWN
-		  };
+		std::vector<size_t> previouslyExplored;
+		size_t currentRoom;
 
-		  std::vector<size_t> previouslyExplored;
-		  size_t currentRoom;
+		unsigned int minMoves, maxMoves;
+		const dungeon::Dungeon* const dun = nullptr;
 
-		  unsigned int minMoves, maxMoves;
-
-		  const unsigned int width, height;
-
-		  size_t nextRoom();
+		size_t nextRoom();
+		bool tryRoom(const int* const movement, size_t ogRoom, Worm::Slither proj) const;
 	  public:
 		std::vector<size_t> getPath() const;
+		size_t getRoom() const;
+
 		bool hasBeenIn(size_t newRoom) const;
 		bool canGoIn(size_t oriRoom, size_t newRoom) const;
 
 		void start();
 
-		size_t getRoom() const;
-
-		Worm(size_t pOrigin, unsigned int pWidth, unsigned pLength);
-		~Worm();
+		// Has to be in here???
+		Worm(size_t pOrigin, Dungeon* const pDungeon);
 	};
 }

@@ -30,6 +30,6 @@ unsigned int dungeon::generateHeight(unsigned int pSeed) {
 
 dungeon::dungeonType dungeon::generateType(unsigned int pSeed) {
 	unsigned int number = dungeon::generateNumber<unsigned int>(0, 100, pSeed);
-	dungeonType type = (dungeonType)((number < 20)*DUNGEON_EMPTY + (number >= 20)*dungeon::DUNGEON_NORMAL);
+	dungeonType type = (dungeonType)((number < DUNGEON_ROOM_EMPTY_CHANCE)*DUNGEON_EMPTY + (number >= DUNGEON_ROOM_EMPTY_CHANCE)*DUNGEON_NORMAL);
 	return type;
 }
